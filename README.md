@@ -245,7 +245,7 @@ applications:
                      "amqp://some-user:sekrit@10.x.x.y:5672",
                      "amqp://some-user:sekrit@10.x.x.z:5672"]
     "username"    : "some-user",
-    "vhost"      : "/"
+    "vhost"       : "/"
    },
     "management": {
     "host"        : "10.x.x.x",
