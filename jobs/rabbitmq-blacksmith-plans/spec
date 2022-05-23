@@ -53,6 +53,28 @@ properties:
   rabbitmq.tls.key:
     description: The Server Key
 
+  rabbitmq.route_registrar.enabled:
+    description: Enable registration of dashbaord url with cf
+    default: false
+  rabbitmq.route_registrar.tls.enabled:
+    description: Register the route to the TLS 
+    default: false
+
+  rabbitmq.network:
+    description: Network for RabbitMQ Service Deployment
+    default: rabbitmq-service
+
+  # When using either dashboard or autoscaler queue depth
+  cf.deployment_name:
+    description: BOSH CF deployment name
+  cf.core_network:
+    description: CF Core network
+  cf.system_domain:
+    description:  CF system domain to use for route registration
+
+  bosh.deployment_name:
+    description: BOSH environment deployment name
+
   plans:
     description: |
       A map of plans.  I.e.:

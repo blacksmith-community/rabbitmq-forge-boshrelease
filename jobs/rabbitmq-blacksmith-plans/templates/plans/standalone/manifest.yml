@@ -3,12 +3,27 @@ meta:
   size: default
   username: (( vault $CREDENTIALS "/rabbitmq/system:username" ))
   password: (( vault $CREDENTIALS "/rabbitmq/system:password" ))
+<% if p("rabbitmq.route_registrar.enabled") -%>
+  cf:
+    deployment_name: <%= p("cf.deployment_name") %>
+<% end -%>
+
+<% if p("rabbitmq.route_registrar.enabled") -%>
+params:
+   cf:
+     core_network: <%= p("cf.core_network") %>
+<% end -%>
 
 features:
   use_dns_addresses: true
 
 releases:
   - { name: rabbitmq-forge, version: latest }
+<% if p("rabbitmq.route_registrar.enabled") %>
+  - { name: routing, version: latest }
+  - { name: bpm, version: latest }
+  - { name: bosh-dns-aliases, version: latest}
+<% end -%>
 
 stemcells:
 - alias: default
@@ -25,7 +40,7 @@ instance_groups:
   - name: standalone
     instances: 1
     azs: [z1]
-    networks: [name: (( grab meta.net || "rabbitmq-services" ))]
+    networks: [name: (( grab meta.net || "rabbitmq-service" ))]
     stemcell: default
 
     vm_type: (( grab meta.size ))
@@ -35,6 +50,7 @@ instance_groups:
         release: rabbitmq-forge
         properties:
           rabbitmq:
+            network: (( grab meta.net || "rabbitmq-service" ))
             default:
               user: rabbit
               password: (( grab meta.password ))
@@ -52,7 +68,68 @@ instance_groups:
           rabbitmq-servers:
             as: rabbitmq-servers
             ip_addresses: false
+
         consumes:
           rabbitmq-servers:
             from: rabbitmq-servers
             ip_addresses: false
+
+<% if p("rabbitmq.route_registrar.enabled") -%>
+      - name: route_registrar
+        release: routing
+        properties:
+          nats:
+            tls:
+                enabled: true
+                client_cert: "((/<%= p("bosh.deployment_name") %>-bosh/<%= p("cf.deployment_name") %>/nats_client_cert.certificate))"
+                client_key: "((/<%= p("bosh.deployment_name") %>-bosh/<%= p("cf.deployment_name") %>/nats_client_cert.private_key))"
+          route_registrar:
+            logging_level: "debug"
+            routes:
+              - name: <%= spec.deployment %>
+                uris:
+                 - "rmq-<%= spec.deployment %>.<%= p("cf.system_domain") %>"
+                registration_interval: 10s
+                <% if p("rabbitmq.route_registrar.tls.enabled") == "true" -%>
+                tls_port: 15671
+                server_cert_domain_san: rmq-<%= spec.deployment %>.<%= p("cf.system_domain") %>
+                <% else %>
+                port: 15672
+                <% end -%>
+                
+        consumes:
+          nats:
+            from: nats
+            deployment: <%= p("cf.deployment_name") %>
+          nats-tls:
+            from: nats-tls
+            deployment: <%= p("cf.deployment_name") %>
+      - name:  bpm
+        release: bpm
+
+addons:
+- name: bosh-dns-aliases
+  include:
+    jobs:
+    - name: route_registrar
+      release: routing
+  jobs:
+  - name: bosh-dns-aliases
+    release: bosh-dns-aliases
+    properties:
+      aliases:
+      - domain: nats.service.cf.internal
+        targets:
+        - deployment: (( grab meta.cf.deployment_name ))
+          domain: bosh
+          instance_group: nats
+          network: (( grab params.cf.core_network ))
+          query: '*'
+      - domain: _.nats.service.cf.internal
+        targets:
+        - deployment: (( grab meta.cf.deployment_name ))
+          domain: bosh
+          instance_group: nats
+          network: (( grab params.cf.core_network ))
+          query: _
+<% end %>
