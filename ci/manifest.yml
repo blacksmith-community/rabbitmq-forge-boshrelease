@@ -12,6 +12,24 @@ instance_groups:
     - name: rabbitmq-blacksmith-plans
       release: rabbitmq-forge
       properties:
+        environment: default
+        rabbitmq_metrics_emitter:
+          cloud_foundry:
+            username: default
+            password: default
+        cf:
+          exodus_path: default
+          deployment_name: default
+          system_domain: default
+          api_url: default
+          username: default
+          password: default
+        loggregator:
+          tls:
+            ca_cert: default
+            agent:
+              cert: default
+              key: default
         plans:
           standalone:
             name: standalone
