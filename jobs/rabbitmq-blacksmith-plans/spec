@@ -76,6 +76,10 @@ properties:
 
   cf.password:
     description: The admin password for cloudfoundry
+  
+  cf.nats_tls_only:
+    description: Allow only tls communication with nats (since cf-deployment 17.0.0)
+    default: false
 
   loggregator.tls.ca_cert:
     description: The CA Certificate for loggregator

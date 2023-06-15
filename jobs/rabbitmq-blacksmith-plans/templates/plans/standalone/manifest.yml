@@ -229,6 +229,7 @@ instance_groups:
 <% end -%>
 
     consumes:
+<% if p("cf.nats_tls_only") == false -%>
       nats:
         from: nats
         deployment: <%= p("cf.deployment_name") -%>
@@ -236,6 +237,11 @@ instance_groups:
       nats-tls:
         from: nats-tls
         deployment: <%= p("cf.deployment_name") -%>
+<% else -%>
+      nats-tls:
+        from: nats-tls
+        deployment: <%= p("cf.deployment_name") -%>
+<% end -%>
 
   - name:    bpm
     release: bpm
