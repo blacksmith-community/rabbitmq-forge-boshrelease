@@ -6,7 +6,7 @@ source /var/vcap/jobs/rabbitmq/env # RabbitMQ Env Vars
 case $1 in
   (start)
     # We cannot use rabbitmqctl to check the version before the service starts so pulling from the app source
-    grep vsn /var/vcap/packages/*/ebin/rabbit.app | 
+    grep vsn /var/vcap/packages/rabbitmq/plugins/*/ebin/rabbit.app | 
       sed -e 's/.*vsn,."\([^ ]*\)".*/\1/' >/var/vcap/store/rabbitmq/RABBITMQ_VERSION
 
     erl -noshell -eval 'erlang:display(erlang:system_info(system_version))'\
