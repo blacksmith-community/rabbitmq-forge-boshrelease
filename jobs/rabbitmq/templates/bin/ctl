@@ -18,15 +18,15 @@ case $1 in
     PLUGINS=""
     <% if p('management') -%>
     PLUGINS="rabbitmq_management"
-    <% end %>
+    <% end -%>
 
+    <% if p('plugins') do |additional_plugins| %>
     # Add additional plugins specified in params
-    <% if_p('plugins') do |additional_plugins| %>
-    PLUGINS="$PLUGINS <%= additional_plugins.join(' ') %>"
-    <% end %>
+    PLUGINS="${PLUGINS} <%= additional_plugins.join(' ') %>"
+    <% end -%>
 
     # Enable additional plugins specified in params
-    if [ ! -z "$PLUGINS" ]; then
+    if [[ ! -z "$PLUGINS" ]]; then
       echo "Enabling plugins: $PLUGINS" >>$LOG_DIR/rabbitmq.log 2>&1
       rabbitmq-plugins enable --offline $PLUGINS >>$LOG_DIR/rabbitmq.log 2>&1
     else
