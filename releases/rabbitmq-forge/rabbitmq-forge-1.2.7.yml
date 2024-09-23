@@ -1,7 +1,7 @@
 name: rabbitmq-forge
 version: 1.2.7
-commit_hash: 73e65c1
-uncommitted_changes: false
+commit_hash: e2c732f
+uncommitted_changes: true
 jobs:
 - name: rabbitmq
   version: eebfedb520662de50982ed7a88ce63a33ad3d9c8e45082bfba4e4979c1eebc1f
@@ -11,9 +11,9 @@ jobs:
   - erlang
   - rabbitmq
 - name: rabbitmq-blacksmith-plans
-  version: 5e5d606d19053343a29f56d09c50fc795b185f7a45c7a085f41d621e178c8029
-  fingerprint: 5e5d606d19053343a29f56d09c50fc795b185f7a45c7a085f41d621e178c8029
-  sha1: sha256:00d4c1671ea310d31ce79b9501a8b0134843c456c9aa2b9c623b29f9ec55ef3d
+  version: 48f4bc986cebbd33e1c1d76038b00e07d1ca1c0067bb9c856f4c8e8fd39ea934
+  fingerprint: 48f4bc986cebbd33e1c1d76038b00e07d1ca1c0067bb9c856f4c8e8fd39ea934
+  sha1: sha256:904772d770be238911b1f2cd14d2092596fac7eaced85aef0a05d78fc300e191
   packages: []
 packages:
 - name: erlang
