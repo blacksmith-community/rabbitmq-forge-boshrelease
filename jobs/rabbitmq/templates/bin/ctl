@@ -20,15 +20,12 @@ case $1 in
     PLUGINS="rabbitmq_management"
     <% end %>
 
-    # Debug Raw contents of the plugins property
-    # plugins: <%= p('plugins').inspect %>
-
     <% if_p('plugins') do |additional_plugins| %>
     # Add additional plugins specified in params
     PLUGINS="$PLUGINS <%= additional_plugins.join(' ') %>"
     <% end %>
 
-    # Enable additional plugins specified in params
+    # Enable plugins
     if [ ! -z "$PLUGINS" ]; then
       echo "Enabling plugins: $PLUGINS" >>$LOG_DIR/rabbitmq.log 2>&1
       rabbitmq-plugins enable --offline $PLUGINS >>$LOG_DIR/rabbitmq.log 2>&1
