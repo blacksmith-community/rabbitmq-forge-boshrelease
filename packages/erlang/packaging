@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-VERSION=26.2.5
+VERSION=26.2.5.14
 CPUS=$(grep -c ^processor /proc/cpuinfo)
 
 tar xfv erlang/otp_src_${VERSION}.tar.gz
