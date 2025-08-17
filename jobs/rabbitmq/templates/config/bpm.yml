@@ -1,0 +1,46 @@
+processes:
+- name: rabbitmq
+  executable: /usr/bin/env
+  user: vcap
+  args:
+  - /var/vcap/packages/rabbitmq/sbin/rabbitmq-server
+  env:
+    HOME: /home/vcap
+    RABBITMQ_PLAN: "<%= p('rabbitmq.plan') %>"
+    RABBITMQ_ADMIN_PASS: "<%= p('rabbitmq.admin.pass') %>"
+    RABBITMQ_ADMIN_USER: "<%= p('rabbitmq.admin.user') %>"
+    RABBITMQ_MONITORING_PASS: "<%= p('rabbitmq.monitoring.pass') %>"
+    RABBITMQ_MONITORING_USER: "<%= p('rabbitmq.monitoring.user') %>"
+    RABBITMQ_APP_PASS: "<%= p('rabbitmq.app.pass') %>"
+    RABBITMQ_APP_USER: "<%= p('rabbitmq.app.user') %>"
+    RABBITMQ_CONFIG_FILE: /var/vcap/jobs/rabbitmq/config/rabbitmq.conf
+    RABBITMQ_LOG_BASE: /var/vcap/sys/log/rabbitmq
+    RABBITMQ_MNESIA_BASE: /var/vcap/store/rabbitmq
+    RABBITMQ_NODENAME: "rabbit@<%= spec.id %>.<%= spec.name %>.<%= p('rabbitmq.network').gsub('.', '') %>.<%= spec.deployment %>.bosh"
+    RABBITMQ_PID_FILE: /var/vcap/sys/run/bpm/rabbitmq/rabbitmq.pid
+    RABBITMQ_USE_LONGNAME: "true"
+    RABBITMQ_VHOST: "<%= p('rabbitmq.vhost') %>"
+    RABBITMQ_EVAL_TIMEOUT: "90"
+    EPMD_PID_FILE: /var/vcap/sys/run/bpm/rabbitmq/epmd.pid
+    ERL_INETRC: /var/vcap/jobs/rabbitmq/config/erl_inetrc
+    LC_ALL: en_US.UTF-8
+    LANG: en_US.UTF-8
+    LANGUAGE: en_US.UTF-8
+    PATH: "/bin:/sbin:/usr/bin:/usr/sbin:/var/vcap/packages/erlang/bin:/var/vcap/packages/rabbitmq/sbin"
+  hooks:
+    pre_start: /var/vcap/jobs/rabbitmq/bin/pre-start
+  limits:
+    memory: <%= (p('vm.memory_mb') * 0.9).to_i %>M
+    open_files: 65536
+  ephemeral_disk: true
+  persistent_disk: true
+  unsafe:
+    privileged: true
+    host_pid_namespace: true
+    unrestricted_volumes:
+    - path: /home/vcap
+      allow_executions: true
+      writable: true
+  capabilities:
+  - NET_BIND_SERVICE
+  workdir: /var/vcap/store/rabbitmq

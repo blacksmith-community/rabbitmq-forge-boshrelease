@@ -73,7 +73,7 @@ set_app_vhost_permissions() {
 }
 
 wait_for_rabbitmq_startup() {
-  rabbitmqctl eval -t ${RABBITMQ_EVAL_TIMEOUT} 'rabbit:await_startup().'
+  rabbitmqctl eval -t "${RABBITMQ_EVAL_TIMEOUT}" 'rabbit:await_startup().'
 }
 
 remove_guest_user() {

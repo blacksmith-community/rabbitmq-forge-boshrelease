@@ -1,5 +1,5 @@
 check process rabbitmq
-  with pidfile /var/vcap/sys/run/rabbitmq/rabbitmq.pid
-  start program "/var/vcap/jobs/rabbitmq/bin/ctl start"
-  stop program "/var/vcap/jobs/rabbitmq/bin/ctl stop"
+  with pidfile /var/vcap/sys/run/bpm/rabbitmq/rabbitmq.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start rabbitmq"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop rabbitmq"
   group vcap

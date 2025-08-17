@@ -1,14 +1,51 @@
 #!/bin/bash
+
 set -eu
 
-source /var/vcap/jobs/rabbitmq/env
+source /var/vcap/jobs/rabbitmq/env # RabbitMQ Env Vars
 
-for dir in $JOB_DIR $RUN_DIR $LOG_DIR $TMP_DIR $STORE_DIR
-do mkdir -p ${dir} ; chown vcap:vcap ${dir} ; chmod 775 ${dir}
-done # Ensure expected directories exist and have appropriate owner/permissions
+echo -e "Ensuring required directories exist with correct ownership and permissions...\n"
+for dir in /home/vcap $JOB_DIR $RUN_DIR $LOG_DIR $TMP_DIR $STORE_DIR
+do
+  echo -e "${dir}...\n"
+  /bin/mkdir -p "${dir}"
+  /bin/chown -R vcap:vcap "${dir}"
+  /bin/chmod 0775 "${dir}"
+  /usr/bin/find ${dir} -type d -exec chmod 0755 {} \;
+done
 
-echo <%= p('erlang.cookie') %> > /home/vcap/.erlang.cookie
-chown vcap:vcap /home/vcap/.erlang.cookie
-chmod 600 /home/vcap/.erlang.cookie
+# NOTE: We cannot use rabbitmqctl to check the version before the service starts so pulling from the app source
+/usr/bin/grep vsn /var/vcap/packages/rabbitmq/plugins/*/ebin/rabbit.app |
+  sed -e 's/.*vsn,."\([^ ]*\)".*/\1/' >/var/vcap/store/rabbitmq/RABBITMQ_VERSION
+
+erl -noshell -eval 'erlang:display(erlang:system_info(system_version))'\
+  -eval 'init:stop()' >/var/vcap/store/rabbitmq/ERLANG_VERSION_FULL
+
+/bin/chown vcap:vcap /var/vcap/store/rabbitmq/RABBITMQ_VERSION \
+  /var/vcap/store/rabbitmq/ERLANG_VERSION_FULL
+
+echo -e "Setting up Erlang Cookie...\n"
+echo "<%= p('erlang.cookie') %>" > /home/vcap/.erlang.cookie
+/bin/chown vcap:vcap /home/vcap/.erlang.cookie
+/bin/chmod 600 /home/vcap/.erlang.cookie
+
+echo -e "Setting up Plugins...\n"
+export PLUGINS=""
+<% if p('management.enabled') -%>
+PLUGINS="rabbitmq_management"
+<% end %>
+
+echo -e "Adding any additional plugins specified in params...\n"
+<% if_p('plugins') do |additional_plugins| %>
+PLUGINS="$PLUGINS <%= additional_plugins.join(' ') %>"
+<% end %>
+
+echo -e "Enabling any additional plugins specified in params...\n"
+if [[ ! -z "$PLUGINS" ]]; then
+  echo "Enabling plugins: $PLUGINS"
+  rabbitmq-plugins enable --offline $PLUGINS
+else
+  echo "No plugins specified to enable"
+fi
 
 exit 0

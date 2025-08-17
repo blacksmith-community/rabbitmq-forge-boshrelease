@@ -50,7 +50,7 @@ management.tcp.compress = true
 
 <% if tls_enabled -%>
 # https://www.rabbitmq.com/ssl.html
-# Management TLS Listener is on port 5671
+# Management TLS Listener is on port 15671
 management.ssl.port = <%= p("management.tls.port") %>
 # Management TLS Certificates
 management.ssl.cacertfile           = /var/vcap/jobs/rabbitmq/tls/rabbitmq.ca
