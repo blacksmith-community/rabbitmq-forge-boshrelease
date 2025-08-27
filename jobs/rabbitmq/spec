@@ -100,5 +100,4 @@ properties:
 
   vm.memory_mb:
     description: "Total VM memory in MB (RabbitMQ will use 90% of this value)"
-    default: 1024
 
