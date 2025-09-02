@@ -327,15 +327,15 @@ releases:
     version: latest
 <% if p("rabbitmq.route_registrar.enabled") -%>
   - name: "routing"
-    version: "0.275.0"
-    url: "https://bosh.io/d/github.com/cloudfoundry/routing-release?v=0.275.0"
-    sha1: "6dd63d1653bf333ea64fca061a3a16d9be2e750f"
+    version: "0.338.0"
+    url: "https://bosh.io/d/github.com/cloudfoundry/routing-release?v=0.338.0"
+    sha1: "69690159842feda278a45ca17484ea055432086d"
 <% end -%>
 <% if p("rabbitmq.route_registrar.enabled") || p("rabbitmq.autoscale.enabled") -%>
   - name: "bpm"
-    version: "1.2.1"
-    url: "https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.2.1"
-    sha1: "36299a55c00d28cfe54bbb4772ca617f52d76adb"
+    version: "1.4.20"
+    url: "https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.4.20"
+    sha1: "00223345c70d5629d35008e88c42bf4482bdf766"
   - name: "bosh-dns-aliases"
     version: "0.0.4"
     url: "https://bosh.io/d/github.com/cloudfoundry/bosh-dns-aliases-release?v=0.0.4"
@@ -343,9 +343,9 @@ releases:
 <% end -%>
 <% if p("rabbitmq.autoscale.enabled") -%>
   - name: "loggregator-agent"
-    version: "7.2.1"
-    url: "https://bosh.io/d/github.com/cloudfoundry/loggregator-agent-release?v=7.2.1"
-    sha1: "623e45f6c19a68d01c313a9a1a504dabc39ac1cf"
+    version: "8.3.8"
+    url: "https://bosh.io/d/github.com/cloudfoundry/loggregator-agent-release?v=8.3.8"
+    sha1: "c0871307d993aa1766982b04f312affa83bce926"
   - name:    rabbitmq-metrics-emitter
     version: 0.4.1
     url:     https://github.com/cloudfoundry-community/rabbitmq-metrics-emitter-release/releases/download/v0.4.1/rabbitmq-metrics-emitter-0.4.1.tgz
