@@ -44,6 +44,9 @@ properties:
   service.name:
     description: Human-friendly name for this service, to be displayed in the Cloud Foundry marketplace.
     default: rabbitmq
+  
+  service.stemcell:
+    description: The stemcell to use for rabbitmq service.
 
   service.description:
     description: A description for this service, to be displayed in the Cloud Foundry marketplace.
