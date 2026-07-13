@@ -1,7 +1,7 @@
-erlang/otp_src_26.2.5.14.tar.gz:
-  size: 106315999
-  object_id: 3d86fe56-acc2-4c52-653d-5638b60ffef5
-  sha: sha256:39f5e25709820606ab11c867285a2132ac4b2999827af0071a1fb2ef1589ad9a
+erlang/otp_src_26.2.5.21.tar.gz:
+  size: 106347158
+  object_id: b7707f30-4fcc-4208-71a5-da5ebc3db2c6
+  sha: sha256:e1fde86f4e2874d4c136221a34753b5b785d762b910fb3fb35a23a6a7faf0a64
 rabbitmq/rabbitmq-server-generic-unix-3.13.6.tar.xz:
   size: 16572992
   object_id: ee138689-d5cb-4252-5515-519fbbfdff99
