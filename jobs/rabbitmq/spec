@@ -94,6 +94,31 @@ properties:
     description: "Rabbitmq management portal TLS port"
     default: 15671
 
+  mqtt.port:
+    description: "MQTT plugin plaintext port (rabbitmq_mqtt)"
+    default: 1883
+  mqtt.tls.port:
+    description: "MQTT plugin TLS port (rabbitmq_mqtt)"
+    default: 8883
+  stomp.port:
+    description: "STOMP plugin plaintext port (rabbitmq_stomp)"
+    default: 61613
+  stomp.tls.port:
+    description: "STOMP plugin TLS port (rabbitmq_stomp)"
+    default: 61614
+  web_mqtt.port:
+    description: "Web-MQTT plugin plaintext port (rabbitmq_web_mqtt)"
+    default: 15675
+  web_mqtt.tls.port:
+    description: "Web-MQTT plugin TLS port (rabbitmq_web_mqtt)"
+    default: 15676
+  web_stomp.port:
+    description: "Web-STOMP plugin plaintext port (rabbitmq_web_stomp)"
+    default: 15674
+  web_stomp.tls.port:
+    description: "Web-STOMP plugin TLS port (rabbitmq_web_stomp)"
+    default: 15673
+
   erlang.cookie:
     description: "Rabbitmq cookie for clustering"
     default: insecure-erlang-cookie
