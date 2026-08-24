@@ -145,12 +145,17 @@ instance_groups:
         type: address
       - name: rabbitmq-alias-domain
         type: placeholder
-<% if p("rabbitmq.autoscale.enabled") -%>
 
-<% if !p("rabbitmq.route_registrar.enabled") -%>
+  # bpm is required by every plan, not just the autoscale/route-registrar
+  # ones: jobs/rabbitmq/monit starts and stops the server through
+  # /var/vcap/jobs/bpm/bin/bpm, so a node without bpm colocated can never
+  # start - monit reports "not monitored - start pending" and the deploy
+  # fails with "not running after update".
   - name:    bpm
     release: bpm
-<% end -%>
+
+<% if p("rabbitmq.autoscale.enabled") -%>
+
   - name: loggr-syslog-agent
     release: loggregator-agent
     
@@ -265,9 +270,6 @@ instance_groups:
         deployment: <%= p("cf.deployment_name") -%>
 <% end -%>
 
-  - name:    bpm
-    release: bpm
-
 addons:
 - name: bosh-dns-aliases
 
@@ -330,11 +332,11 @@ releases:
     url: "https://bosh.io/d/github.com/cloudfoundry/routing-release?v=0.338.0"
     sha1: "69690159842feda278a45ca17484ea055432086d"
 <% end -%>
-<% if p("rabbitmq.route_registrar.enabled") || p("rabbitmq.autoscale.enabled") -%>
   - name: "bpm"
     version: "1.4.20"
     url: "https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.4.20"
     sha1: "00223345c70d5629d35008e88c42bf4482bdf766"
+<% if p("rabbitmq.route_registrar.enabled") || p("rabbitmq.autoscale.enabled") -%>
   - name: "bosh-dns-aliases"
     version: "0.0.4"
     url: "https://bosh.io/d/github.com/cloudfoundry/bosh-dns-aliases-release?v=0.0.4"
