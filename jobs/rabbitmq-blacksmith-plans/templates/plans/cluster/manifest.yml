@@ -14,15 +14,38 @@ meta:
   erlang_cookie: (( vault $CREDENTIALS "/rabbitmq/erlang:cookie" ))
   plugins: <%= p('plugins') %>
 
-<% if p("rabbitmq.autoscale.enabled") -%>
+<%
+  # The bosh-dns-aliases addon below grabs meta.cf.deployment_name whenever
+  # route_registrar is on, but this block used to be emitted only for
+  # autoscale - so enabling route_registrar without autoscale produced a
+  # manifest spruce could not evaluate:
+  #
+  #   $.addons.bosh-dns-aliases...targets.0.deployment: Unable to resolve
+  #   `meta.cf.deployment_name`: `$.meta.cf` could not be found
+  #
+  # Blacksmith reports that as a provision stuck "in progress" forever: the
+  # manifest never renders, so no BOSH deployment is ever submitted and
+  # there is no task for an operator to find.
+  #
+  # deployment_name and system_domain are the two keys route_registrar
+  # needs (the latter for the TLS certificate's alternative_names). The
+  # rest stay behind autoscale - cf.api_url, cf.username and cf.password
+  # have no defaults in the spec and nothing sets them unless the
+  # autoscale feature is on.
+-%>
+<% if p("rabbitmq.autoscale.enabled") || p("rabbitmq.route_registrar.enabled") -%>
   cf:
-    exodus_path: <%= p('cf.exodus_path') %>
     deployment_name: <%= p('cf.deployment_name') %>
     system_domain: <%= p('cf.system_domain') %>
+<% if p("rabbitmq.autoscale.enabled") -%>
+    exodus_path: <%= p('cf.exodus_path') %>
     api_url:    <%= p('cf.api_url') %>
     username:   <%= p('cf.username') %>
     password:   <%= p('cf.password') %>
+<% end -%>
+<% end -%>
 
+<% if p("rabbitmq.autoscale.enabled") -%>
   mgmt_ssl:    <%= p('rabbitmq_metrics_emitter.rmq_management.skip_ssl_validation') %>
   mgmt_port:   <%= p('rabbitmq_metrics_emitter.rmq_management.mgmt_port') %>
   mgmt_scheme: <%= p('rabbitmq_metrics_emitter.rmq_management.mgmt_scheme') %>
