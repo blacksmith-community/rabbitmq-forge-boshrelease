@@ -2,6 +2,32 @@
   tls_enabled = p("rabbitmq.tls.enabled") == true
   dual_mode_enabled = p("rabbitmq.tls.dual-mode") == true
   management_enabled = p('management.enabled') == true
+
+  # AMQP and the management API are configured below from the core
+  # listeners.* / management.* settings. The MQTT, STOMP, Web-MQTT and
+  # Web-STOMP plugins each own their own listeners and inherit none of
+  # that, so with tls.enabled set and nothing said about them, they kept
+  # serving plaintext on their default ports and had no TLS port at all.
+  # Measured on RabbitMQ 4.2.9 with tls.enabled true, dual-mode false:
+  # 5671 amqp/ssl and 15671 https came up as intended, while 1883 mqtt,
+  # 61613 stomp, 15675 web-mqtt and 15674 web-stomp were still listening
+  # in the clear.
+  #
+  # p('plugins') is the same list bin/pre-start feeds to
+  # `rabbitmq-plugins enable`, so a listener is only configured for a
+  # plugin that is actually turned on.
+  plugins = p('plugins', [])
+  mqtt_enabled = plugins.include?('rabbitmq_mqtt')
+  stomp_enabled = plugins.include?('rabbitmq_stomp')
+  web_mqtt_enabled = plugins.include?('rabbitmq_web_mqtt')
+  web_stomp_enabled = plugins.include?('rabbitmq_web_stomp')
+
+  # "TLS only" has to mean every protocol, not just AMQP.
+  plaintext_enabled = !tls_enabled || dual_mode_enabled
+
+  tls_ca  = "/var/vcap/jobs/rabbitmq/tls/rabbitmq.ca"
+  tls_crt = "/var/vcap/jobs/rabbitmq/tls/rabbitmq.crt"
+  tls_key = "/var/vcap/jobs/rabbitmq/tls/rabbitmq.key"
 -%>
 
 <% if ! tls_enabled || (tls_enabled && dual_mode_enabled) -%>
@@ -69,6 +95,64 @@ management.ssl.ciphers.7  = TLS_RSA_WITH_AES_128_CBC_SHA256         # AES128-SHA
 management.ssl.ciphers.8  = TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256   # ECDHE-RSA-AES128-SHA256
 <% end -%>
 <% end -%>
+<% if mqtt_enabled -%>
+# https://www.rabbitmq.com/mqtt.html
+# The MQTT plugin reuses the ssl_options above, so only the port is needed.
+<% if plaintext_enabled -%>
+mqtt.listeners.tcp.default = <%= p('mqtt.port') %>
+<% else -%>
+mqtt.listeners.tcp = none # disables non-tls
+<% end -%>
+<% if tls_enabled -%>
+mqtt.listeners.ssl.default = <%= p('mqtt.tls.port') %>
+<% end -%>
+<% end -%>
+
+<% if stomp_enabled -%>
+# https://www.rabbitmq.com/stomp.html
+# The STOMP plugin reuses the ssl_options above, so only the port is needed.
+<% if plaintext_enabled -%>
+stomp.listeners.tcp.default = <%= p('stomp.port') %>
+<% else -%>
+stomp.listeners.tcp = none # disables non-tls
+<% end -%>
+<% if tls_enabled -%>
+stomp.listeners.ssl.default = <%= p('stomp.tls.port') %>
+<% end -%>
+<% end -%>
+
+<% if web_mqtt_enabled -%>
+# https://www.rabbitmq.com/web-mqtt.html
+# Unlike mqtt and stomp, the two WebSocket plugins do NOT inherit
+# ssl_options - each needs its own certificate paths.
+<% if plaintext_enabled -%>
+web_mqtt.tcp.port = <%= p('web_mqtt.port') %>
+<% else -%>
+web_mqtt.tcp.listener = none # disables non-tls
+<% end -%>
+<% if tls_enabled -%>
+web_mqtt.ssl.port       = <%= p('web_mqtt.tls.port') %>
+web_mqtt.ssl.cacertfile = <%= tls_ca %>
+web_mqtt.ssl.certfile   = <%= tls_crt %>
+web_mqtt.ssl.keyfile    = <%= tls_key %>
+<% end -%>
+<% end -%>
+
+<% if web_stomp_enabled -%>
+# https://www.rabbitmq.com/web-stomp.html
+<% if plaintext_enabled -%>
+web_stomp.tcp.port = <%= p('web_stomp.port') %>
+<% else -%>
+web_stomp.tcp.listener = none # disables non-tls
+<% end -%>
+<% if tls_enabled -%>
+web_stomp.ssl.port       = <%= p('web_stomp.tls.port') %>
+web_stomp.ssl.cacertfile = <%= tls_ca %>
+web_stomp.ssl.certfile   = <%= tls_crt %>
+web_stomp.ssl.keyfile    = <%= tls_key %>
+<% end -%>
+<% end -%>
+
 #####Cluster configuration#####
 <% if p("rabbitmq.plan") == "cluster" -%>
 <%
