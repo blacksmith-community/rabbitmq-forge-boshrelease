@@ -46,7 +46,12 @@ properties:
     default: rabbitmq
   
   service.stemcell:
-    description: The stemcell to use for rabbitmq service.
+    description: The stemcell version to use for rabbitmq service.
+    default: latest
+
+  service.stemcell_os:
+    description: The stemcell OS to use for rabbitmq service.
+    default: ubuntu-jammy
 
   service.description:
     description: A description for this service, to be displayed in the Cloud Foundry marketplace.

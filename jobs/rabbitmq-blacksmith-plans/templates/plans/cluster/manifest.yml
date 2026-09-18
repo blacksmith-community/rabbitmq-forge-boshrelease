@@ -354,8 +354,8 @@ releases:
 
 stemcells:
 - alias: default
-  os: ubuntu-jammy
-  version: <%= p('service.stemcell') %>
+  os: "<%= p('service.stemcell_os') %>"
+  version: "<%= p('service.stemcell').to_s.gsub('"', '') %>"
 
 update:
   canaries: 1
