@@ -17,7 +17,9 @@ RSpec.shared_context 'rabbitmq plans' do
         'api_url' => 'https://api.sys.example.com',
         'username' => 'admin',
         'password' => 'secret',
-        'core_network' => 'core'
+        'core_network' => 'core',
+        'nats_client_cert' => "-----BEGIN CERTIFICATE-----\nabc\n-----END CERTIFICATE-----",
+        'nats_client_key' => "-----BEGIN RSA PRIVATE KEY-----\ndef\n-----END RSA PRIVATE KEY-----"
       },
       'bosh' => { 'deployment_name' => 'lab' },
       'rabbitmq_metrics_emitter' => { 'cloud_foundry' => { 'api' => 'https://api.sys.example.com', 'username' => 'admin', 'password' => 'secret' } },

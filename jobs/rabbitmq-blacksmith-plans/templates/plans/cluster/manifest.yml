@@ -1,3 +1,5 @@
+<% require "json" -%>
+<% routing = p("rabbitmq.route_registrar.enabled") && !p("cf.nats_client_cert", "").to_s.empty? && !p("cf.nats_client_key", "").to_s.empty? -%>
 ---
 meta:
   size: default
@@ -33,7 +35,7 @@ meta:
   # have no defaults in the spec and nothing sets them unless the
   # autoscale feature is on.
 -%>
-<% if p("rabbitmq.autoscale.enabled") || p("rabbitmq.route_registrar.enabled") -%>
+<% if p("rabbitmq.autoscale.enabled") || routing -%>
   cf:
     deployment_name: <%= p('cf.deployment_name') %>
     system_domain: <%= p('cf.system_domain') %>
@@ -90,7 +92,7 @@ variables:
         wildcard: true
 <% end -%>
 
-<% if p("rabbitmq.route_registrar.enabled") -%>
+<% if routing -%>
 params:
   cf:
     core_network: <%= p("cf.core_network") %>
@@ -253,7 +255,7 @@ instance_groups:
         type: address
 <% end -%>
 
-<% if p("rabbitmq.route_registrar.enabled") -%>
+<% if routing -%>
   - name: route_registrar
     release: routing
 
@@ -261,8 +263,8 @@ instance_groups:
       nats:
         tls:
           enabled: true
-          client_cert: "((/<%= p("bosh.deployment_name") %>-bosh/<%= p("cf.deployment_name") %>/nats_client_cert.certificate))"
-          client_key: "((/<%= p("bosh.deployment_name") %>-bosh/<%= p("cf.deployment_name") %>/nats_client_cert.private_key))"
+          client_cert: <%= p("cf.nats_client_cert").to_json %>
+          client_key: <%= p("cf.nats_client_key").to_json %>
 
       route_registrar:
         logging_level: "debug"
@@ -350,7 +352,7 @@ addons:
 releases:
   - name: rabbitmq-forge
     version: latest
-<% if p("rabbitmq.route_registrar.enabled") -%>
+<% if routing -%>
   - name: "routing"
     version: "<%= p('routing_release.version').to_s.gsub('"', '') %>"
     url: "<%= p('routing_release.url').to_s.gsub('"', '') %>"
@@ -360,7 +362,7 @@ releases:
     version: "<%= p('bpm_release.version').to_s.gsub('"', '') %>"
     url: "<%= p('bpm_release.url').to_s.gsub('"', '') %>"
     sha1: "<%= p('bpm_release.sha1').to_s.gsub('"', '') %>"
-<% if p("rabbitmq.route_registrar.enabled") || p("rabbitmq.autoscale.enabled") -%>
+<% if routing || p("rabbitmq.autoscale.enabled") -%>
   - name: "bosh-dns-aliases"
     version: "<%= p('bosh_dns_aliases_release.version').to_s.gsub('"', '') %>"
     url: "<%= p('bosh_dns_aliases_release.url').to_s.gsub('"', '') %>"
