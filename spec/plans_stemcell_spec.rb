@@ -12,12 +12,16 @@ describe 'rabbitmq-blacksmith-plans stemcell' do
       end
 
       it 'renders the stemcell OS from a property' do
-        props = base.merge('service' => { 'stemcell' => '0.184', 'stemcell_os' => 'ubuntu-resolute' })
+        props = base.merge('stemcell_os' => 'ubuntu-resolute')
         expect(render(plan, props)['stemcells'].first['os']).to eq('ubuntu-resolute')
       end
 
       it 'keeps the stemcell version a string' do
         expect(render(plan, base)['stemcells'].first['version']).to be_a(String)
+      end
+
+      it 'prefers stemcell_version over service.stemcell' do
+        expect(render(plan, base.merge('stemcell_version' => '0.185'))['stemcells'].first['version']).to eq('0.185')
       end
     end
   end

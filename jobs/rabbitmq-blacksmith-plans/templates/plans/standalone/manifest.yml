@@ -378,8 +378,8 @@ releases:
 
 stemcells:
 - alias: default
-  os: <%= p('service.stemcell_os') %>
-  version: "<%= p('service.stemcell').to_s.gsub('"', '') %>"
+  os: <%= p('stemcell_os') %>
+  version: "<%= (p('stemcell_version').to_s.empty? ? p('service.stemcell') : p('stemcell_version')).to_s.gsub('"', '') %>"
 
 update:
   canaries: 1
