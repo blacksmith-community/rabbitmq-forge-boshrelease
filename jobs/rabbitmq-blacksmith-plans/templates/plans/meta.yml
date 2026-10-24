@@ -2,10 +2,12 @@
 meta:
   environment: <%= p('environment') %>
 
-<% if p("rabbitmq.autoscale.enabled") -%>
+<% if p("rabbitmq.autoscale.enabled") || p("rabbitmq.route_registrar.enabled") -%>
   cf:
-    exodus_path: <%= p('cf.exodus_path') %>
     deployment_name: <%= p('cf.deployment_name') %>
+<% end -%>
+<% if p("rabbitmq.autoscale.enabled") -%>
+    exodus_path: <%= p('cf.exodus_path') %>
     system_domain: <%= p('cf.system_domain') %>
     api_url:    <%= p('cf.api_url') %>
     username:   <%= p('cf.username') %>
