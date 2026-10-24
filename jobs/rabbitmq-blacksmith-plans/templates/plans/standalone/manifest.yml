@@ -351,19 +351,19 @@ releases:
     version: latest
 <% if p("rabbitmq.route_registrar.enabled") -%>
   - name: "routing"
-    version: "0.338.0"
-    url: "https://bosh.io/d/github.com/cloudfoundry/routing-release?v=0.338.0"
-    sha1: "69690159842feda278a45ca17484ea055432086d"
+    version: "<%= p('routing_release.version').to_s.gsub('"', '') %>"
+    url: "<%= p('routing_release.url').to_s.gsub('"', '') %>"
+    sha1: "<%= p('routing_release.sha1').to_s.gsub('"', '') %>"
 <% end -%>
   - name: "bpm"
-    version: "1.4.20"
-    url: "https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.4.20"
-    sha1: "00223345c70d5629d35008e88c42bf4482bdf766"
+    version: "<%= p('bpm_release.version').to_s.gsub('"', '') %>"
+    url: "<%= p('bpm_release.url').to_s.gsub('"', '') %>"
+    sha1: "<%= p('bpm_release.sha1').to_s.gsub('"', '') %>"
 <% if p("rabbitmq.route_registrar.enabled") || p("rabbitmq.autoscale.enabled") -%>
   - name: "bosh-dns-aliases"
-    version: "0.0.4"
-    url: "https://bosh.io/d/github.com/cloudfoundry/bosh-dns-aliases-release?v=0.0.4"
-    sha1: "55b3dced813ff9ed92a05cda02156e4b5604b273"
+    version: "<%= p('bosh_dns_aliases_release.version').to_s.gsub('"', '') %>"
+    url: "<%= p('bosh_dns_aliases_release.url').to_s.gsub('"', '') %>"
+    sha1: "<%= p('bosh_dns_aliases_release.sha1').to_s.gsub('"', '') %>"
 <% end -%>
 <% if p("rabbitmq.autoscale.enabled") -%>
   - name: "loggregator-agent"
