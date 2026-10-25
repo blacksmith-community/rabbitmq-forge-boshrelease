@@ -5,7 +5,7 @@ set -eu
 source /var/vcap/jobs/rabbitmq/env # RabbitMQ Env Vars
 
 echo -e "Ensuring required directories exist with correct ownership and permissions...\n"
-for dir in /home/vcap $JOB_DIR $RUN_DIR $LOG_DIR $TMP_DIR $STORE_DIR
+for dir in /home/vcap $RUN_DIR $LOG_DIR $TMP_DIR $STORE_DIR
 do
   echo -e "${dir}...\n"
   /bin/mkdir -p "${dir}"
