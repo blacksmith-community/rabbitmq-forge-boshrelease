@@ -1,5 +1,6 @@
 <% require "json" -%>
-<% routing = p("rabbitmq.route_registrar.enabled") && !p("cf.nats_client_cert", "").to_s.empty? && !p("cf.nats_client_key", "").to_s.empty? -%>
+<% routing = p("rabbitmq.route_registrar.enabled") -%>
+<% nats_certs = !p("cf.nats_client_cert", "").to_s.empty? && !p("cf.nats_client_key", "").to_s.empty? -%>
 ---
 meta:
   size: default
@@ -262,8 +263,13 @@ instance_groups:
       nats:
         tls:
           enabled: true
+<% if nats_certs -%>
           client_cert: <%= p("cf.nats_client_cert").to_json %>
           client_key: <%= p("cf.nats_client_key").to_json %>
+<% else -%>
+          client_cert: "((/<%= p("bosh.deployment_name") %>-bosh/<%= p("cf.deployment_name") %>/nats_client_cert.certificate))"
+          client_key: "((/<%= p("bosh.deployment_name") %>-bosh/<%= p("cf.deployment_name") %>/nats_client_cert.private_key))"
+<% end -%>
 
       route_registrar:
         logging_level: "debug"
